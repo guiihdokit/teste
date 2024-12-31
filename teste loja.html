@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho de Compras Completo</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .product { margin: 20px 0; display: flex; align-items: center; }
+        .product img { width: 100px; height: 100px; margin-right: 20px; }
+        .cart-item { margin: 10px 0; display: flex; align-items: center; }
+        .cart-item img { width: 50px; height: 50px; margin-right: 10px; }
+        .cart-total { font-weight: bold; margin-top: 20px; }
+        button { cursor: pointer; margin-left: 10px; }
+        select, input[type="number"] { margin-left: 10px; }
+    </style>
+</head>
+
+<link rel="stylesheet"href="index.css">
+
+<body>
+   <p>
+   </p> <h2>Produtos Disponíveis</h2>
+    <div class="product">
+   <a href="https://im.ge/i/kt0Ath"><img src="https://i.im.ge/2024/10/16/kt0Ath.blusinha-a5-removebg-preview.png" alt="blusinha a5 removebg preview" border="0" /></a>
+        <span>regata feminina - R$12,00</span>
+        <select id="tamanhoProduto1">
+            <option value="P">P</option>
+            <option value="M">M</option>
+            <option value="G">G</option>
+        </select>
+        <select id="corProduto1">
+            <option value="Vermelho">Vermelho</option>
+            <option value="Azul">Azul</option>
+            <option value="Verde">Verde</option>
+        </select>
+        <input type="number" id="quantidadeProduto1" value="1" min="1">
+        <button onclick="adicionarAoCarrinho('regata feminina', 12.00, 'https://i.im.ge/2024/10/16/kt0Ath.blusinha-a5-removebg-preview.png', document.getElementById('tamanhoProduto1').value, document.getElementById('corProduto1').value, document.getElementById('quantidadeProduto1').value)">Adicionar ao Carrinho</button>
+    </div>
+    <div class="product">
+        <a href="https://im.ge/i/kt0Ath"><img src="https://i.im.ge/2024/10/16/kt0Ath.blusinha-a5-removebg-preview.png" alt="blusinha a5 removebg preview" border="0" /></a>
+        <span>regata de alça fina - R$15,00</span>
+        <select id="tamanhoProduto2">
+            <option value="P">P</option>
+            <option value="M">M</option>
+            <option value="G">G</option>
+        </select>
+        <select id="corProduto2">
+            <option value="Preto">Preto</option>
+            <option value="Branco">Branco</option>
+            <option value="Cinza">Cinza</option>
+        </select>
+        <input type="number" id="quantidadeProduto2" value="1" min="1">
+        <button onclick="adicionarAoCarrinho('regata de alça fina', 15.00, 'https://i.im.ge/2024/10/16/kt0Ath.blusinha-a5-removebg-preview.png', document.getElementById('tamanhoProduto2').value, document.getElementById('corProduto2').value, document.getElementById('quantidadeProduto2').value)">Adicionar ao Carrinho</button>
+    </div>
+
+    <h2>Carrinho de Compras</h2>
+    <div id="carrinho"></div>
+    <p class="cart-total">Total: R$ <span id="total">0.00</span></p>
+    <button onclick="finalizarCompra()">Finalizar Compra via WhatsApp</button>
+
+    <script>
+        const carrinho = [];
+
+        function adicionarAoCarrinho(produto, preco, imagem, tamanho, cor, quantidade) {
+            // Adiciona o produto ao array do carrinho com todas as informações
+            carrinho.push({ produto, preco, imagem, tamanho, cor, quantidade });
+
+            // Atualiza o carrinho na tela
+            atualizarCarrinho();
+        }
+
+        function atualizarCarrinho() {
+            const carrinhoDiv = document.getElementById('carrinho');
+            const totalSpan = document.getElementById('total');
+            carrinhoDiv.innerHTML = '';
+
+            let total = 0;
+
+            // Percorre os itens do carrinho e exibe na tela
+            carrinho.forEach((item, index) => {
+                const subtotal = item.preco * item.quantidade;
+                total += subtotal;
+                carrinhoDiv.innerHTML += `<div class="cart-item">
+                    <img src="${item.imagem}" alt="${item.produto}">
+                    ${item.produto} (Tamanho: ${item.tamanho}, Cor: ${item.cor}, Quantidade: ${item.quantidade}) - R$${subtotal.toFixed(2)}
+                    <button onclick="removerDoCarrinho(${index})">Remover</button>
+                </div>`;
+            });
+
+            // Atualiza o valor total
+            totalSpan.textContent = total.toFixed(2);
+        }
+
+        function removerDoCarrinho(index) {
+            // Remove o item do carrinho
+            carrinho.splice(index, 1);
+
+            // Atualiza o carrinho na tela
+            atualizarCarrinho();
+        }
+
+        function finalizarCompra() {
+            if (carrinho.length === 0) {
+                alert('Seu carrinho está vazio!');
+                return;
+            }
+
+            let mensagem = 'Olá, gostaria de finalizar minha compra:\n\n';
+
+            // Adiciona os itens do carrinho à mensagem
+            carrinho.forEach(item => {
+                mensagem += `- ${item.produto} (Tamanho: ${item.tamanho}, Cor: ${item.cor}, Quantidade: ${item.quantidade}) - R$${(item.preco * item.quantidade).toFixed(2)}\n`;
+            });
+
+            // Adiciona o total
+            const total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+            mensagem += `\nTotal: R$${total.toFixed(2)}`;
+
+            // Número do WhatsApp (substitua pelo número correto)
+            const numeroWhatsApp = "5511995453845"; // Exemplo: "5511995453845"
+
+            // URL para abrir o WhatsApp com a mensagem preenchida
+            const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+
+            // Abre o WhatsApp
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
